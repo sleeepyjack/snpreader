@@ -3,6 +3,9 @@
  *
  *  Created on: 23/10/2013
  *      Author: jorge
+ *
+ *	Refactored on: Oct 19, 2016
+ *			Author: djuenger
  */
 
 #include "LineReader.h"

@@ -3,6 +3,9 @@
  *
  *  Created on: 16/12/2014
  *      Author: jorge
+ *
+ *	Refactored on: Oct 19, 2016
+ *			Author: djuenger
  */
 
 #ifndef SNP_H_

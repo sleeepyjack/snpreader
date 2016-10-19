@@ -3,6 +3,9 @@
  *
  *  Created on: Dec 16, 2014
  *      Author: gonzales
+ *
+ *	Refactored on: Oct 19, 2016
+ *			Author: djuenger
  */
 
 #ifndef SNPREADER_H_
