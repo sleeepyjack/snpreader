@@ -9,13 +9,12 @@
 #define SNPREADER_H_
 
 #include "SNP.h"
-#include "Options.h"
 #include "MyFile.h"
 #include "LineReader.h"
 
 class SNPReader {
 public:
-	SNPReader(Options* options);
+	SNPReader(string tpedFileName, string tfamFileName);
 	virtual ~SNPReader();
 
 	// Loads all the SNPs in the reader
@@ -49,8 +48,9 @@ private:
 		_boolArrSize = nsize*2;
 		bool* nbuffer = new bool[_boolArrSize];
 		if (!nbuffer) {
-			Utils::exit("Memory reallocation failed in file %s in line %d\n",
+			printf("Memory reallocation failed in file %s in line %d\n",
 					__FUNCTION__, __LINE__);
+			exit(1);
 		}
 		// Copy the old data
 		memcpy(nbuffer, _indsClass, (_boolArrSize/2)*sizeof(bool));
@@ -60,7 +60,8 @@ private:
 		_indsClass = nbuffer;
 	}
 
-	Options* _options;
+	string _tpedFileName;
+	string _tfamFileName;
 	vector<SNP*> _snpSet;
 	// File handler
 	MyFilePt _fpTfam;

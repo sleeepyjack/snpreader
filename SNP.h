@@ -9,7 +9,6 @@
 #define SNP_H_
 
 #include "Macros.h"
-#include "Utils.h"
 
 // Structure to store all the information of one SNP
 struct SNP
@@ -57,8 +56,10 @@ struct SNP
 
 	void setName(uint8_t* name){
 			if ((_nameLength = strlen((char*) name)) > SNP_MAX_NAME_SIZE) {
-			Utils::exit("Name too long in function %s line %d\n",
+			printf("Name too long in function %s line %d\n",
 						__FUNCTION__, __LINE__);
+			fflush(stdout);
+			exit(1);
 		}
 		else{
 			strcpy((char*) _name, (char*) name);

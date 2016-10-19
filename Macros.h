@@ -44,6 +44,6 @@ using namespace std;
 #define GENO_aa	2
 
 // Output
-#define DEBUG // To print the logs of debugging
+//#define DEBUG // To print the logs of debugging
 
 #endif /* MACROS_H_ */

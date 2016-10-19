@@ -39,8 +39,10 @@ private:
 				if (myfeof(file)) {
 					return -1;
 				} else {
-					Utils::exit("File reading failed in function %s line %d\n",
+					printf("File reading failed in function %s line %d\n",
 							__FUNCTION__, __LINE__);
+					fflush(stdout);
+					exit(1);
 				}
 			}
 		}
@@ -51,7 +53,7 @@ private:
 		if (_fileBufferSentinel >= 0) {
 			_fileBuffer[--_fileBufferSentinel] = ch;
 		} else {
-			Utils::log("Two consecutive ungetc operations occurred\n");
+			printf("Two consecutive ungetc operations occurred\n");
 			return -1; /*an error occurred, return end-of-file marker*/
 		}
 		return ch;

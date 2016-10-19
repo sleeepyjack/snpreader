@@ -17,52 +17,68 @@ LineReader::LineReader(){
 	_buffer = new uint8_t[_size1];
 	_buffer = new uint8_t[SNP_MAX_NAME_SIZE];
 	if (_buffer == NULL) {
-		Utils::exit("Memory allocation failed in file %s in line %d\n",
+		printf("Memory allocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 
 	_bufferCase0 = new uint32_t[_size1];
 	if (_bufferCase0 == NULL) {
-		Utils::exit("Memory allocation failed in file %s in line %d\n",
+		printf("Memory allocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 
 	_bufferCase1 = new uint32_t[_size1];
 	if (_bufferCase1 == NULL) {
-		Utils::exit("Memory allocation failed in file %s in line %d\n",
+		printf("Memory allocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 
 	_bufferCase2 = new uint32_t[_size1];
 	if (_bufferCase2 == NULL) {
-		Utils::exit("Memory allocation failed in file %s in line %d\n",
+		printf("Memory allocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 
 	_bufferCtrl0 = new uint32_t[_size2];
 	if (_bufferCtrl0 == NULL) {
-		Utils::exit("Memory allocation failed in file %s in line %d\n",
+		printf("Memory allocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 
 	_bufferCtrl1 = new uint32_t[_size2];
 	if (_bufferCtrl1 == NULL) {
-		Utils::exit("Memory allocation failed in file %s in line %d\n",
+		printf("Memory allocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 
 	_bufferCtrl2 = new uint32_t[_size2];
 	if (_bufferCtrl2 == NULL) {
-		Utils::exit("Memory allocation failed in file %s in line %d\n",
+		printf("Memory allocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 
 	_fileBufferSentinel = 0;
 	_fileBufferLength = 0;
 	_fileBufferR = new uint8_t[4096 + 8];
 	if (_fileBufferR == NULL) {
-		Utils::exit("Memory allocation failed in file %s in line %d\n",
+		printf("Memory allocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 	_fileBuffer = _fileBufferR + 8; /*make it aligned*/
 
@@ -113,30 +129,42 @@ int LineReader::readTFAMLine(MyFilePt& pt, uint32_t line){
 	while ((ch = myfgetc(pt)) != -1 && !isblank(ch)){
 	}
 	if (ch == -1) { // It means that there is no value
-		Utils::exit("TFAM file: Incomplete individual information in line %d\n", line);
+		printf("TFAM file: Incomplete individual information in line %d\n", line);
+		fflush(stdout);
+		exit(1);
 	}
 
 	// Skip the name
 	while ((ch = myfgetc(pt)) != -1 && !isblank(ch)){
 	}
 	if (ch == -1) { // It means that there is no value
-		Utils::exit("TFAM file: Incomplete individual information in line %d\n", line);
+		printf("TFAM file: Incomplete individual information in line %d\n", line);
+		fflush(stdout);
+		exit(1);
 	}
 
 	// Following information: father (space) mother (space) sex (space) case
 	for(int i=0; i <=6; i++){
 		if((ch = myfgetc(pt)) == -1){
-			Utils::exit("TFAM file: Incomplete individual information in line %d\n", line);
+			printf("TFAM file: Incomplete individual information in line %d\n", line);
+			fflush(stdout);
+			exit(1);
 		}
 	}
 
 	if(ch < '1' || ch > '2'){
-		Utils::exit("TFAM file: %d is a wrong identification for line %d\n", ch, line);
+		printf("TFAM file: %d is a wrong identification for line %d\n", ch, line);
+		fflush(stdout);
+		exit(1);
 	}
 
 	int chEnd = myfgetc(pt);
 	if((chEnd != '\n') && (chEnd != '\r')) // Value to pass to the next line
-		Utils::exit("TFAM file: Too many values for line %d\n", line);
+	{
+		printf("TFAM file: Too many values for line %d\n", line);
+		fflush(stdout);
+		exit(1);
+	}
 
 	if(ch == '1'){
 		return 1;
@@ -163,19 +191,25 @@ bool LineReader::readTPEDLine(MyFilePt& pt, SNP* readSNP, uint32_t line, uint32_
 		ch = myfgetc(pt);
 	}
 	if (ch == -1) { // It means that there is no value
-		Utils::exit("TPED file: Incomplete SNP information in line %d\n", line);
+		printf("TPED file: Incomplete SNP information in line %d\n", line);
+		fflush(stdout);
+		exit(1);
 	}
 
 	// Read the SNP name (only one line)
 	_length1 = 0;
 	while ((ch = myfgetc(pt)) != -1 && !isblank(ch)){
 		if(_length1 == SNP_MAX_NAME_SIZE){
-			Utils::exit("TPED file: SNP name longer than %d in line %d\n", SNP_MAX_NAME_SIZE, line);
+			printf("TPED file: SNP name longer than %d in line %d\n", SNP_MAX_NAME_SIZE, line);
+			fflush(stdout);
+			exit(1);
 		}
 		_buffer[_length1++] = ch;
 	}
 	if (ch == -1) { // It means that there is no value
-		Utils::exit("TPED file: Incomplete SNP information in line %d\n", line);
+		printf("TPED file: Incomplete SNP information in line %d\n", line);
+		fflush(stdout);
+		exit(1);
 	}
 	_buffer[_length1] = '\0';
 
@@ -193,14 +227,18 @@ bool LineReader::readTPEDLine(MyFilePt& pt, SNP* readSNP, uint32_t line, uint32_
 	while ((ch = myfgetc(pt)) != -1 && !isblank(ch)){
 	}
 	if (ch == -1) { // It means that there is no value
-		Utils::exit("TPED file: Incomplete SNP information in line %d\n", line);
+		printf("TPED file: Incomplete SNP information in line %d\n", line);
+		fflush(stdout);
+		exit(1);
 	}
 
 	// Skip the genetic distance
 	while ((ch = myfgetc(pt)) != -1 && !isblank(ch)){
 	}
 	if (ch == -1) { // It means that there is no value
-		Utils::exit("TPED file: Incomplete SNP information in line %d\n", line);
+		printf("TPED file: Incomplete SNP information in line %d\n", line);
+		fflush(stdout);
+		exit(1);
 	}
 
 	_length1 = 0;
@@ -216,7 +254,11 @@ bool LineReader::readTPEDLine(MyFilePt& pt, SNP* readSNP, uint32_t line, uint32_
 	// Look which is the minor and major allele
 	// Use an additional pointer
 	if((ch = myfgetc(pt)) == -1)
-		Utils::exit("TPED file: Not enough values for the SNP %d\n", line);
+	{
+		printf("TPED file: Not enough values for the SNP %d\n", line);
+		fflush(stdout);
+		exit(1);
+	}
 	int majorAllele = ch;
 	int minorAllele = 0;
 	_searchArr[0] = ch;
@@ -228,7 +270,11 @@ bool LineReader::readTPEDLine(MyFilePt& pt, SNP* readSNP, uint32_t line, uint32_
 			ch = myfgetc(pt);
 		}
 		if(ch == -1)
-			Utils::exit("TPED file: Not second allele SNP %d\n", line);
+		{
+			printf("TPED file: Not second allele SNP %d\n", line);
+			fflush(stdout);
+			exit(1);
+		}
 
 		if(ch != majorAllele){
 			minorAllele = ch;
@@ -247,7 +293,11 @@ bool LineReader::readTPEDLine(MyFilePt& pt, SNP* readSNP, uint32_t line, uint32_
 			ch = myfgetc(pt);
 		}
 		if(ch == -1)
-			Utils::exit("TPED file: Not second allele SNP %d\n", line);
+		{
+			printf("TPED file: Not second allele SNP %d\n", line);
+			fflush(stdout);
+			exit(1);
+		}
 
 		if(readBases >= _searchArrSize){
 			_resizeSearchArr(_searchArrSize);
@@ -293,7 +343,11 @@ bool LineReader::readTPEDLine(MyFilePt& pt, SNP* readSNP, uint32_t line, uint32_
 			ch = myfgetc(pt);
 		}
 		if(ch == -1)
-			Utils::exit("TPED file: Not enough values for the SNP %d\n", line);
+		{
+			printf("TPED file: Not enough values for the SNP %d\n", line);
+			fflush(stdout);
+			exit(1);
+		}
 
 		phen = 0;
 		// Take the first allele
@@ -307,7 +361,11 @@ bool LineReader::readTPEDLine(MyFilePt& pt, SNP* readSNP, uint32_t line, uint32_
 			ch = myfgetc(pt);
 		}
 		if(ch == -1)
-			Utils::exit("TPED file: Not enough values for the SNP %d\n", line);
+		{
+			printf("TPED file: Not enough values for the SNP %d\n", line);
+			fflush(stdout);
+			exit(1);
+		}
 
 		// Take the second allele
 		if(ch != majorAllele){
@@ -326,7 +384,11 @@ bool LineReader::readTPEDLine(MyFilePt& pt, SNP* readSNP, uint32_t line, uint32_
 
 	ch = myfgetc(pt);
 	if ((ch != '\n') && (ch != '\r'))
-		Utils::exit("TPED file: Too many values for the SNP %d (ch == %d)\n", line, ch);
+	{
+		printf("TPED file: Too many values for the SNP %d (ch == %d)\n", line, ch);
+		fflush(stdout);
+		exit(1);
+	}
 
 	// Insert the values obtained in the new SNP
 	readSNP->setCaseValues(_bufferCase0, _bufferCase1, _bufferCase2, _length1 + (_internalPos1>0));
@@ -412,8 +474,10 @@ void LineReader::_resizeBufferCases(size_t nsize) {
 	_size1 = nsize * 2;
 	uint32_t* nbuffer = new uint32_t[_size1];
 	if (!nbuffer) {
-		Utils::exit("Memory reallocation failed in file %s in line %d\n",
+		printf("Memory reallocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 	// Copy the old data
 	memcpy(nbuffer, _bufferCase0, _length1*sizeof(uint32_t));
@@ -424,8 +488,10 @@ void LineReader::_resizeBufferCases(size_t nsize) {
 
 	uint32_t* nbuffer1 = new uint32_t[_size1];
 	if (!nbuffer1) {
-		Utils::exit("Memory reallocation failed in file %s in line %d\n",
+		printf("Memory reallocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 	// Copy the old data
 	memcpy(nbuffer1, _bufferCase1, _length1*sizeof(uint32_t));
@@ -436,8 +502,10 @@ void LineReader::_resizeBufferCases(size_t nsize) {
 
 	uint32_t* nbuffer2 = new uint32_t[_size1];
 	if (!nbuffer2) {
-		Utils::exit("Memory reallocation failed in file %s in line %d\n",
+		printf("Memory reallocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 	// Copy the old data
 	memcpy(nbuffer2, _bufferCase2, _length1*sizeof(uint32_t));
@@ -456,8 +524,10 @@ void LineReader::_resizeBufferCtrl(size_t nsize) {
 	_size2 = nsize * 2;
 	uint32_t* nbuffer = new uint32_t[_size2];
 	if (!nbuffer) {
-		Utils::exit("Memory reallocation failed in file %s in line %d\n",
+		printf("Memory reallocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 	// Copy the old data
 	memcpy(nbuffer, _bufferCtrl0, _length2*sizeof(uint32_t));
@@ -468,8 +538,10 @@ void LineReader::_resizeBufferCtrl(size_t nsize) {
 
 	uint32_t* nbuffer1 = new uint32_t[_size2];
 	if (!nbuffer1) {
-		Utils::exit("Memory reallocation failed in file %s in line %d\n",
+		printf("Memory reallocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 	// Copy the old data
 	memcpy(nbuffer1, _bufferCtrl1, _length2*sizeof(uint32_t));
@@ -480,8 +552,10 @@ void LineReader::_resizeBufferCtrl(size_t nsize) {
 
 	uint32_t* nbuffer2 = new uint32_t[_size2];
 	if (!nbuffer2) {
-		Utils::exit("Memory reallocation failed in file %s in line %d\n",
+		printf("Memory reallocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 	// Copy the old data
 	memcpy(nbuffer2, _bufferCtrl2, _size2*sizeof(uint32_t));
@@ -500,8 +574,10 @@ void LineReader::_resizeSearchArr(size_t nsize) {
 	_searchArrSize = nsize * 2;
 	int* nbuffer = new int[_searchArrSize];
 	if (!nbuffer) {
-		Utils::exit("Memory reallocation failed in file %s in line %d\n",
+		printf("Memory reallocation failed in file %s in line %d\n",
 				__FUNCTION__, __LINE__);
+		fflush(stdout);
+		exit(1);
 	}
 	// Copy the old data
 	memcpy(nbuffer, _searchArr, nsize*sizeof(int));
@@ -510,4 +586,3 @@ void LineReader::_resizeSearchArr(size_t nsize) {
 	delete[] _searchArr;
 	_searchArr = nbuffer;
 }
-

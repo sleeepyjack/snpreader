@@ -7,16 +7,21 @@
 
 #include "SNPReader.h"
 
-SNPReader::SNPReader(Options* options) {
-	_options = options;
+SNPReader::SNPReader(string tpedFileName, string tfamFileName) {
+	_tpedFileName = tpedFileName;
+	_tfamFileName = tfamFileName;
 	_snpSet.resize(DEFAULT_NUM_SNPS);
 
-	if((_fpTfam = myfopen(options->getTFAMFileName().c_str(), "r")) == NULL){
-		Utils::exit("TFAM file: file %s could not be opened\n", options->getTFAMFileName().c_str());
+	if((_fpTfam = myfopen(_tfamFileName.c_str(), "r")) == NULL){
+		printf("TFAM file: file %s could not be opened\n", _tfamFileName.c_str());
+		fflush(stdout);
+		exit(1);
 	}
 
-	if((_fpTped = myfopen(options->getTPEDFileName().c_str(), "r")) == NULL){
-		Utils::exit("TPED file: file %s could not be opened\n", options->getTPEDFileName().c_str());
+	if((_fpTped = myfopen(_tpedFileName.c_str(), "r")) == NULL){
+		printf("TPED file: file %s could not be opened\n", _tpedFileName.c_str());
+		fflush(stdout);
+		exit(1);
 	}
 
 	_indsClass = new bool[DEFAULT_NUM_INDS];
@@ -40,7 +45,6 @@ void SNPReader::_loadIndsClass(){
 	int retValue;
 	_numCases = 0;
 	_numCtrls = 0;
-
 	while((retValue = _lineReader->readTFAMLine(_fpTfam, numInds)) >= 0){
 		if(numInds >= _boolArrSize){
 			_resizeBoolArr(_boolArrSize);
@@ -56,17 +60,17 @@ void SNPReader::_loadIndsClass(){
 		numInds++;
 	}
 
-	Utils::log("Loaded information of %ld individuals (%ld/%ld cases/controls)\n", numInds, _numCases, _numCtrls);
+	printf("Loaded information of %ld individuals (%ld/%ld cases/controls)\n", numInds, _numCases, _numCtrls);
 #ifdef DEBUG
 	for(int i=0; i<numInds; i++){
 		if(_indsClass[i]){
-			Utils::log("control ");
+			printf("control ");
 		}
 		else{
-			Utils::log("case ");
+			printf("case ");
 		}
 	}
-	Utils::log("\n");
+	printf("\n");
 #endif
 }
 
@@ -97,33 +101,33 @@ void SNPReader::loadSNPSet(){
 	int j;
 	uint16_t casesAa, ctrlsAa;
 	for(int i=0; i<_numSnp; i++){
-		Utils::log("SNP %d:\n   name %s\n   cases 0", i, (char *)_snpSet[i]->_name);
+		printf("SNP %d:\n   name %s\n   cases 0", i, (char *)_snpSet[i]->_name);
 		for(j=0; j<(_numCases/32+((_numCases%32)>0)); j++){
-			Utils::log("%u ", _snpSet[i]->_case0Values[j]);
+			printf("%u ", _snpSet[i]->_case0Values[j]);
 		}
 
-		Utils::log("\n   cases 1 ");
+		printf("\n   cases 1 ");
 		for(j=0; j<(_numCases/32+((_numCases%32)>0)); j++){
-			Utils::log("%u ", _snpSet[i]->_case1Values[j]);
+			printf("%u ", _snpSet[i]->_case1Values[j]);
 		}
 
-		Utils::log("\n   cases 2 ");
+		printf("\n   cases 2 ");
 		for(j=0; j<(_numCases/32+((_numCases%32)>0)); j++){
-			Utils::log("%u ", _snpSet[i]->_case2Values[j]);
+			printf("%u ", _snpSet[i]->_case2Values[j]);
 		}
-		Utils::log("\n   controls 0 ");
+		printf("\n   controls 0 ");
 		for(j=0; j<(_numCtrls/32+((_numCtrls%32)>0)); j++){
-			Utils::log("%u ", _snpSet[i]->_ctrl0Values[j]);
-		}
-
-		Utils::log("\n   controls 1 ");
-		for(j=0; j<(_numCtrls/32+((_numCtrls%32)>0)); j++){
-			Utils::log("%u ", _snpSet[i]->_ctrl1Values[j]);
+			printf("%u ", _snpSet[i]->_ctrl0Values[j]);
 		}
 
-		Utils::log("\n   controls 2 ");
+		printf("\n   controls 1 ");
 		for(j=0; j<(_numCtrls/32+((_numCtrls%32)>0)); j++){
-			Utils::log("%u ", _snpSet[i]->_ctrl2Values[j]);
+			printf("%u ", _snpSet[i]->_ctrl1Values[j]);
+		}
+
+		printf("\n   controls 2 ");
+		for(j=0; j<(_numCtrls/32+((_numCtrls%32)>0)); j++){
+			printf("%u ", _snpSet[i]->_ctrl2Values[j]);
 		}
 	}
 #endif
